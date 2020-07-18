@@ -1,0 +1,44 @@
+.wv-container {
+  .item {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    $item-header-height: 1.2rem;
+    $item-footer-height: 1.2rem;
+    .item-header {
+      color: white;
+      height: $item-header-height;
+      cursor: move;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+
+      label {
+        cursor: pointer;
+      }
+      button {
+        cursor: pointer;
+      }
+    }
+    .wv {
+      height: calc(100% - #{$item-header-height} - #{$item-header-height});
+    }
+    .filter-wv {
+      background-color: transparent;
+      position: absolute;
+      top: $item-header-height;
+      bottom: $item-header-height;
+      width: 100%;
+    }
+    .item-footer {
+      height: $item-footer-height;
+      cursor: move;
+      background-color: rgba(255, 255, 255, 0.2);
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+    }
+  }
+}
