@@ -1,7 +1,23 @@
 {
   "name": "hololive-viewer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
+  "homepage": ".",
+  "author": "srymh",
+  "description": "",
+  "main": "build/electron/main.js",
+  "build": {
+    "appId": "srymh.Hololive-Viewer",
+    "productName": "Hololive-Viewer",
+    "copyright": "Copyright © 2020 srymh",
+    "extends": null,
+    "files": [
+      "build/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
+  },
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
@@ -10,12 +26,17 @@
     "@types/node": "^12.0.0",
     "@types/react": "^16.9.0",
     "@types/react-dom": "^16.9.0",
+    "electron-is-dev": "^1.2.0",
+    "electron-reload": "^1.5.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
     "typescript": "~3.7.2"
   },
   "scripts": {
+    "postinstall": "electron-builder install-app-deps",
+    "electron:dev": "concurrently \"yarn start\" \"wait-on http://localhost:3000 && tsc -p electron -w\" \"wait-on http://localhost:3000 && tsc -p electron && electron .\"",
+    "electron:build": "yarn build && tsc -p electron && electron-builder",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -35,5 +56,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "concurrently": "^5.2.0",
+    "electron": "^9.1.0",
+    "electron-builder": "^22.7.0",
+    "wait-on": "^5.1.0"
   }
 }
