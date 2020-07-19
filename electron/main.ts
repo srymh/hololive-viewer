@@ -1,6 +1,8 @@
-import {app, BrowserWindow} from 'electron';
+import {app, BrowserWindow, ipcMain} from 'electron';
 import * as path from 'path';
 import * as isDev from 'electron-is-dev';
+import * as ConfigStore from './ConfigStore';
+import {isChannel} from '../src/types';
 
 let win: BrowserWindow | null = null;
 
@@ -10,6 +12,10 @@ function createWindow() {
     height: 600,
     webPreferences: {
       webviewTag: true,
+      nodeIntegration: false,
+      contextIsolation: true,
+      enableRemoteModule: false,
+      preload: path.join(__dirname, 'preload.js'),
     },
   });
 
@@ -52,4 +58,16 @@ app.on('activate', () => {
   if (win === null) {
     createWindow();
   }
+});
+
+ipcMain.handle('APP_SetChannels', (event, message) => {
+  if (Array.isArray(message)) {
+    if (!message.some((x) => !isChannel(x))) {
+      ConfigStore.setChannels(message);
+    }
+  }
+});
+
+ipcMain.handle('APP_GetChannels', (event, message) => {
+  return ConfigStore.getChannels();
 });
