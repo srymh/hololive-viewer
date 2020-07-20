@@ -1,8 +1,9 @@
-import {app, BrowserWindow, ipcMain} from 'electron';
+import {app, BrowserWindow, ipcMain, Menu} from 'electron';
 import * as path from 'path';
 import * as isDev from 'electron-is-dev';
 import * as ConfigStore from './ConfigStore';
 import {isChannel} from '../src/types';
+import createMenu from './menu';
 
 let win: BrowserWindow | null = null;
 
@@ -19,6 +20,13 @@ function createWindow() {
     },
   });
 
+  const menu = createMenu(() => {
+    win?.webContents.send('APP_ShowConfig', true);
+  });
+  win.setMenu(menu);
+  Menu.setApplicationMenu(menu);
+
+  win.webContents.openDevTools();
   if (isDev) {
     win.loadURL('http://localhost:3000/index.html');
   } else {
@@ -60,14 +68,22 @@ app.on('activate', () => {
   }
 });
 
-ipcMain.handle('APP_SetChannels', (event, message) => {
-  if (Array.isArray(message)) {
-    if (!message.some((x) => !isChannel(x))) {
-      ConfigStore.setChannels(message);
-    }
+ipcMain.handle('APP_SetChannel', (event, message) => {
+  if (isChannel(message)) {
+    ConfigStore.setChannel(message);
+    return true;
   }
+  return false;
 });
 
 ipcMain.handle('APP_GetChannels', (event, message) => {
   return ConfigStore.getChannels();
+});
+
+ipcMain.handle('APP_RemoveChannel', (event, message) => {
+  if (typeof message === 'string') {
+    ConfigStore.removeChannel(message);
+    return true;
+  }
+  return false;
 });

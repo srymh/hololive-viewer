@@ -1,20 +1,35 @@
 import * as ElectronStore from 'electron-store';
 import {Channel} from '../src/types';
 
+type ChannelData = {
+  name: string;
+};
+
+const ChannelsStoreKey = 'channels';
+
 const store = new ElectronStore({
-  name: 'channels',
+  name: ChannelsStoreKey,
+  accessPropertiesByDotNotation: true,
 });
 
-let channels: Channel[] = store.get('channels', []);
+function parse(rawData: {[id: string]: ChannelData}) {
+  return Object.keys(rawData).map((channelId) => {
+    return {id: channelId, name: rawData[channelId].name};
+  });
+}
 
-const setChannels = function (_channelIds: Channel[]) {
-  channels = [...channels, ..._channelIds];
-  store.set('channels', channels);
+const setChannel = function (channel: Channel) {
+  store.set(ChannelsStoreKey + '.' + channel.id, {
+    name: channel.name,
+  });
 };
 
 const getChannels = function () {
-  channels = store.get('channels');
-  return channels;
+  return parse(store.get(ChannelsStoreKey, {}));
 };
 
-export {setChannels, getChannels};
+const removeChannel = function (channelId: string) {
+  store.delete(ChannelsStoreKey + '.' + channelId);
+};
+
+export {setChannel, getChannels, removeChannel};
