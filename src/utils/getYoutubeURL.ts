@@ -1,5 +1,10 @@
 import axios from 'axios';
 
+const domein =
+  process.env['NODE_ENV'] === 'production'
+    ? 'https://www.youtube.com'
+    : process.env['REACT_APP_DEVAPISERVER'] || '';
+
 export async function getChatURL(liveURL: string) {
   const result = await axios.get(liveURL);
   if (result.data) {
@@ -7,7 +12,7 @@ export async function getChatURL(liveURL: string) {
     if (matchObj !== null) {
       console.log(matchObj[0]);
       console.log(matchObj[1]);
-      return 'https://www.youtube.com/live_chat?v=' + matchObj[1];
+      return domein + '/live_chat?v=' + matchObj[1];
     } else {
       return undefined;
     }
@@ -17,5 +22,5 @@ export async function getChatURL(liveURL: string) {
 }
 
 export function getLiveURL(channelID: string) {
-  return 'https://www.youtube.com/embed/live_stream?channel=' + channelID;
+  return domein + '/embed/live_stream?channel=' + channelID;
 }
