@@ -26,7 +26,6 @@ function createWindow() {
   win.setMenu(menu);
   Menu.setApplicationMenu(menu);
 
-  win.webContents.openDevTools();
   if (isDev) {
     win.loadURL('http://localhost:3000/index.html');
   } else {
@@ -36,8 +35,10 @@ function createWindow() {
 
   win.on('closed', () => (win = null));
 
-  // Hot Reloading
   if (isDev) {
+    win.webContents.openDevTools();
+
+    // Hot Reloading
     // 'node_modules/.bin/electronPath'
     require('electron-reload')(__dirname, {
       electron: path.join(
