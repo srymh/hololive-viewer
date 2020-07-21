@@ -23,7 +23,7 @@ const createMenu = (setupChannlesFn: ClickFn) => {
       submenu: [isMac ? {role: 'close'} : {role: 'quit'}],
     },
     {
-      label: 'Edait',
+      label: 'Edit',
       submenu: [
         {
           label: 'Setup Channels',

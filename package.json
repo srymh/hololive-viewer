@@ -38,12 +38,13 @@
   },
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
-    "electron:dev": "concurrently \"yarn start\" \"wait-on http://localhost:3000 && tsc -p electron -w\" \"wait-on http://localhost:3000 && tsc -p electron && electron .\"",
+    "electron:dev": "concurrently \"yarn proxy\" \"yarn start\" \"wait-on http://localhost:3000 && tsc -p electron -w\" \"wait-on http://localhost:3000 && tsc -p electron && electron --inspect=5858 .\"",
     "electron:build": "yarn build && tsc -p electron && electron-builder",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "cross-env BROWSER=NONE REACT_APP_DEVAPISERVER=http://localhost:8080 react-scripts start",
+    "build": "cross-env GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "proxy": "node proxy.js"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -63,8 +64,12 @@
   "devDependencies": {
     "@types/react-grid-layout": "^0.17.2",
     "concurrently": "^5.2.0",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.2",
     "electron": "^9.1.0",
     "electron-builder": "^22.7.0",
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
     "node-sass": "^4.14.1",
     "wait-on": "^5.1.0"
   }
