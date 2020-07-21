@@ -1,6 +1,9 @@
-import {app, BrowserWindow} from 'electron';
+import {app, BrowserWindow, ipcMain, Menu} from 'electron';
 import * as path from 'path';
 import * as isDev from 'electron-is-dev';
+import * as ConfigStore from './ConfigStore';
+import {isChannel} from '../src/types';
+import createMenu from './menu';
 
 let win: BrowserWindow | null = null;
 
@@ -10,9 +13,20 @@ function createWindow() {
     height: 600,
     webPreferences: {
       webviewTag: true,
+      nodeIntegration: false,
+      contextIsolation: true,
+      enableRemoteModule: false,
+      preload: path.join(__dirname, 'preload.js'),
     },
   });
 
+  const menu = createMenu(() => {
+    win?.webContents.send('APP_ShowConfig', true);
+  });
+  win.setMenu(menu);
+  Menu.setApplicationMenu(menu);
+
+  win.webContents.openDevTools();
   if (isDev) {
     win.loadURL('http://localhost:3000/index.html');
   } else {
@@ -52,4 +66,24 @@ app.on('activate', () => {
   if (win === null) {
     createWindow();
   }
+});
+
+ipcMain.handle('APP_SetChannel', (event, message) => {
+  if (isChannel(message)) {
+    ConfigStore.setChannel(message);
+    return true;
+  }
+  return false;
+});
+
+ipcMain.handle('APP_GetChannels', (event, message) => {
+  return ConfigStore.getChannels();
+});
+
+ipcMain.handle('APP_RemoveChannel', (event, message) => {
+  if (typeof message === 'string') {
+    ConfigStore.removeChannel(message);
+    return true;
+  }
+  return false;
 });

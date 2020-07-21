@@ -3,7 +3,7 @@ import axios from 'axios';
 export async function getChatURL(liveURL: string) {
   const result = await axios.get(liveURL);
   if (result.data) {
-    const matchObj = (result.data as string).match(/\'VIDEO_ID\': \"(.*?)\"/);
+    const matchObj = (result.data as string).match(/'VIDEO_ID': "(.*?)"/);
     if (matchObj !== null) {
       console.log(matchObj[0]);
       console.log(matchObj[1]);

@@ -1,79 +1,86 @@
 import React from 'react';
 import './App.scss';
-import {WebviewGridContainer} from './components';
-import {Channel} from './types';
+import {WebviewGridContainer, Config} from './components';
+import {Channel, isChannels} from './types';
 
-const CHANNELS: Channel[] = [
-  {
-    name: '桐生ココ',
-    id: 'UCS9uQI-jC3DE0L4IpXyvr6w',
-  },
-  {
-    name: '湊あくあ',
-    id: 'UC1opHUrw8rvnsadT-iGp7Cg',
-  },
-  {
-    name: 'さくらみこ',
-    id: 'UC-hM6YJuNYVAmUWxeIr9FeA',
-  },
-  {
-    name: '角巻わため',
-    id: 'UCqm3BQLlJfvkTsX_hvm0UmA',
-  },
-  {
-    name: '兎田ぺこら',
-    id: 'UC1DCedRgGHBdm81E1llLhOQ',
-  },
-  {
-    name: '宝鐘マリン',
-    id: 'UCCzUftO8KOVkV4wQG1vkUvg',
-  },
-  {
-    name: 'アキロゼ',
-    id: 'UCFTLzh12_nrtzqBPsTCqenA',
-  },
-  {
-    name: '白上フブキ',
-    id: 'UCdn5BQ06XqgXoAxIhbqw5Rg',
-  },
-  {
-    name: '夏色まつり',
-    id: 'UCQ0UDLQCjY0rmuxCDE38FGg',
-  },
-  {
-    name: '天音かなた',
-    id: 'UCZlDXzGoo7d44bwdNObFacg',
-  },
-  {
-    name: '紫咲シオン',
-    id: 'UCXTpFs_3PqI41qX2d9tL2Rw',
-  },
-  {
-    name: '潤羽るしあ',
-    id: 'UCl_gCybOJRIgOXw6Qb4qJzQ',
-  },
-  {
-    name: '赤井はあと',
-    id: 'UC1CfXB_kRs3C-zaeTG3oGyg',
-  },
-  {
-    name: '不知火フレア',
-    id: 'UCvInZx9h3jC2JzsIzoOebWg',
-  },
-];
+const myIpcRenderer = window.myIpcRenderer;
 
-type AppState = {};
+type AppState = {
+  channels: Channel[];
+  showConfig: boolean;
+};
+
+// javascript - react.js constructor called twice - Stack Overflow
+// https://stackoverflow.com/questions/55119377/react-js-constructor-called-twice/55120877
 
 export default class App extends React.Component<{}, AppState> {
   constructor(props: {}) {
     super(props);
-    this.state = {};
+    this.state = {
+      channels: [],
+      showConfig: false,
+    };
   }
 
+  componentDidMount = async () => {
+    myIpcRenderer.on('APP_ShowConfig', (arg) => {
+      this.setState({showConfig: arg});
+    });
+
+    await this.getChannels();
+  };
+
+  getChannels = async () => {
+    try {
+      const channels = await myIpcRenderer.invoke('APP_GetChannels');
+      if (isChannels(channels)) {
+        this.setState({channels: channels}, () => {
+          console.log('APP_GetChannels:', this.state.channels);
+        });
+      } else {
+        throw new Error('Not Channel[]');
+      }
+    } catch (error) {
+      console.log('APP_GetChannels', error.message);
+    }
+  };
+  addChannel = async (name: string, id: string) => {
+    let result = await myIpcRenderer.invoke('APP_SetChannel', {name, id});
+    console.log('addChannel', result);
+  };
+  removeChannel = async (id: string) => {
+    let result = await myIpcRenderer.invoke('APP_RemoveChannel', id);
+    console.log('removeChannel', result);
+  };
+
+  hideConfig = () => {
+    this.setState({showConfig: false}, async () => {
+      await this.getChannels();
+    });
+  };
+
   render() {
+    const {channels, showConfig} = this.state;
+
+    const channelsIsEmpty = channels.length === 0;
+    console.log(channels.length, channels);
+
     return (
       <div className="container">
-        <WebviewGridContainer channels={CHANNELS} />
+        {showConfig ? (
+          <Config
+            hideConfig={this.hideConfig}
+            addChannel={this.addChannel}
+            removeChannel={this.removeChannel}
+          />
+        ) : (
+          <div></div>
+        )}
+        {!channelsIsEmpty ? (
+          <WebviewGridContainer channels={channels} />
+        ) : (
+          <div></div>
+        )}
       </div>
     );
   }

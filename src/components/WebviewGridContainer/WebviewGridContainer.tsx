@@ -40,6 +40,14 @@ class WebviewGridContainer extends React.Component<
     };
   }
 
+  componentDidUpdate = (prevProps: WebviewGridContainerProps) => {
+    if (this.props.channels.length !== prevProps.channels.length) {
+      this.setState({
+        channels: this.props.channels.map((ch) => setChDisplayConf(ch)),
+      });
+    }
+  };
+
   createLayoutsAndKeys = () => {
     const {channels} = this.state;
     const layouts: Layouts = {lg: []};
@@ -131,6 +139,7 @@ class WebviewGridContainer extends React.Component<
 
   render() {
     const {layouts, keys} = this.createLayoutsAndKeys();
+    console.log('WebviewGridContainerState', this.state);
 
     return (
       <div className="wv-container">
