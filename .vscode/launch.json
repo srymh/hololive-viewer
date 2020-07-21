@@ -1,0 +1,31 @@
+{
+  // IntelliSense を使用して利用可能な属性を学べます。
+  // 既存の属性の説明をホバーして表示します。
+  // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // Debug main process
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Main Process",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+      "windows": {
+        "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
+      },
+      "args": ["--inspect=5858", "."],
+      "outFiles": ["${workspaceFolder}/build/static/**/*.js"]
+    },
+    {
+      // Debug main process
+      // You can attach a debugger to the process started by npm scripts `app`.
+      // Usage:
+      // 1. $ yarn app (or npm run app)
+      // 2. run this
+      "type": "node",
+      "request": "attach",
+      "name": "Attach Debug Main Process",
+      "port": 5858
+    }
+  ]
+}

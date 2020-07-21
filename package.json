@@ -38,7 +38,7 @@
   },
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
-    "electron:dev": "concurrently \"yarn proxy\" \"yarn start\" \"wait-on http://localhost:3000 && tsc -p electron -w\" \"wait-on http://localhost:3000 && tsc -p electron && electron .\"",
+    "electron:dev": "concurrently \"yarn proxy\" \"yarn start\" \"wait-on http://localhost:3000 && tsc -p electron -w\" \"wait-on http://localhost:3000 && tsc -p electron && electron --inspect=5858 .\"",
     "electron:build": "yarn build && tsc -p electron && electron-builder",
     "start": "cross-env BROWSER=NONE REACT_APP_DEVAPISERVER=http://localhost:8080 react-scripts start",
     "build": "react-scripts build",
