@@ -20,12 +20,23 @@ const createMenu = (setupChannlesFn: ClickFn) => {
   const template: Array<MenuItemConstructorOptions | MenuItem> = [
     {
       label: 'File',
+      submenu: [isMac ? {role: 'close'} : {role: 'quit'}],
+    },
+    {
+      label: 'Edait',
       submenu: [
         {
           label: 'Setup Channels',
           click: setupChannlesFn,
         },
-        isMac ? {role: 'close'} : {role: 'quit'},
+      ],
+    },
+    {
+      label: 'View',
+      submenu: [
+        {role: 'reload'},
+        {role: 'toggleDevTools'},
+        {role: 'togglefullscreen'},
       ],
     },
   ];
